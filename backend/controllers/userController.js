@@ -217,3 +217,121 @@ exports.updatePassword = catchAsyncErrors(async(req, res, next) => {
    sendToken(user, 200, res);
 
  })
+
+
+ /***
+ * 
+ *  update User profile
+ * 
+ */
+
+exports.updateProfile = catchAsyncErrors(async(req, res, next) => {
+ 
+const newUserData = { 
+    name: req.body.name,
+    email: req.body.email
+}
+
+await User.findByIdAndUpdate(req.user.id, newUserData,{
+    new: true,
+    newValidators: true,
+    useFindAndModify: false
+})
+
+res.status(200).json({
+    success: true,
+})
+ 
+})
+
+
+
+ /***
+ * 
+ *  Get all users (admin)
+ * 
+ */
+
+ exports.getAllUser = catchAsyncErrors(async(req, res, next) => { 
+ 
+    const users = await User.find();
+
+    res.status(200).json({
+        success: true,
+        users
+    })
+
+ })
+ 
+
+  /***
+ * 
+ *  Get single users (admin)
+ * 
+ */
+
+  exports.getSingleUser = catchAsyncErrors(async(req, res, next) => { 
+ 
+    const user = await User.findById(req.params.id);
+
+    if(!user){
+        return next(new ErrorHandler(`user does not exist with id: ${req.params.id}`))
+    }
+
+    res.status(200).json({
+        success: true,
+        user
+    })
+
+ })
+
+  /***
+ * 
+ *  update user role or anything (admin)
+ * 
+ */
+
+
+  exports.updateUser = catchAsyncErrors(async(req, res, next) => {
+ 
+    const newUserData = { 
+        name: req.body.name,
+        email: req.body.email,
+        role: req.body.role
+    }
+    
+    await User.findByIdAndUpdate(req.params.id, newUserData,{
+        new: true,
+        newValidators: true,
+        useFindAndModify: false
+    })
+    
+    res.status(200).json({
+        success: true,
+    })
+     
+    })
+
+
+    /***
+ * 
+ *  delete user  or anything (admin)
+ * 
+ */
+
+
+  exports.deleteUser = catchAsyncErrors(async(req, res, next) => {
+ 
+ 
+   const user = await User.findByIdAndDelete(req.params.id);
+ 
+   if(!user){
+    return next(new ErrorHandler(`user does not exist with id :${req.params.id}`))
+   }
+
+    res.status(200).json({
+        success: true,
+        message: "user deleted successfully!"
+    })
+     
+    })
